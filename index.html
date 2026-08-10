@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Chloé &amp; Thomas — 12 juin 2027</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   PALETTE — modifiable ici uniquement
+   ============================================================ */
+:root{
+  --vert:      #1E3A31;
+  --vert-clair:#24463B;
+  --or:        #C0A062;
+  --ivoire:    #FBF8F2;
+  --creme:     #F5F1E7;
+  --bulle:     #F2EEE2;
+  --bord:      #E3DCCB;
+  --bord-fonce:#CFC6B2;
+  --encre:     #33302A;
+  --gris:      #8A8271;
+  --succes:    #7D9B4E;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  background:var(--creme);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--encre);
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+.page{
+  max-width:560px;
+  margin:0 auto;
+  background:var(--ivoire);
+  min-height:100vh;
+}
+
+h1,h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;line-height:1.25}
+
+/* ---------- En-tête ---------- */
+.entete{
+  background:var(--vert);
+  color:var(--ivoire);
+  text-align:center;
+  padding:38px 24px 32px;
+}
+.filet{width:34px;height:1px;background:var(--or);margin:0 auto}
+.entete h1{font-size:34px;margin:16px 0 8px}
+.date{font-size:11px;color:var(--or);letter-spacing:2.5px;margin-bottom:16px}
+
+/* ---------- Vidéo ---------- */
+.video{
+  position:relative;
+  background:#fff;
+  aspect-ratio:16/9;
+  border-bottom:1px solid var(--bord);
+  display:flex;align-items:center;justify-content:center;
+}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-attente{text-align:center;padding:24px}
+.rond{
+  width:54px;height:54px;border-radius:50%;
+  border:1px solid var(--or);background:var(--ivoire);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;
+}
+.rond span{
+  display:block;width:0;height:0;margin-left:4px;
+  border-left:14px solid var(--vert);
+  border-top:9px solid transparent;
+  border-bottom:9px solid transparent;
+}
+.video-attente p{font-size:12px;color:var(--gris)}
+
+/* ---------- Sections ---------- */
+section{padding:26px 24px;border-bottom:1px solid var(--bord)}
+section:last-of-type{border-bottom:0}
+h2{font-size:20px;color:var(--vert);margin-bottom:4px}
+.sous{font-size:12px;color:var(--gris);margin-bottom:18px}
+
+/* ---------- Formulaire ---------- */
+label{display:block;font-size:12px;color:var(--gris);margin-bottom:6px}
+input,select,textarea{
+  width:100%;font-family:inherit;font-size:15px;color:var(--encre);
+  background:var(--creme);border:1px solid var(--bord);border-radius:6px;
+  padding:11px 13px;margin-bottom:14px;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--or);outline-offset:1px}
+
+.choix{display:flex;gap:9px;margin-bottom:16px}
+.choix button{
+  flex:1;font-family:inherit;font-size:14px;cursor:pointer;
+  padding:11px;border-radius:6px;
+  border:1px solid var(--bord-fonce);background:transparent;color:#6B6455;
+  transition:.15s;
+}
+.choix button.actif{background:var(--vert);border-color:var(--vert);color:var(--ivoire)}
+
+.bouton{
+  width:100%;font-family:inherit;font-size:15px;cursor:pointer;
+  padding:13px;border:0;border-radius:6px;
+  background:var(--vert);color:var(--ivoire);
+}
+.bouton:hover{background:var(--vert-clair)}
+.bouton:disabled{opacity:.5;cursor:default}
+
+.info{font-size:13px;margin-top:12px;text-align:center}
+.info.ok{color:var(--succes)}
+.info.ko{color:#A5442F}
+
+/* ---------- Chat ---------- */
+.enligne{font-size:11px;color:var(--succes);float:right;margin-top:6px}
+.fil{max-height:340px;overflow-y:auto;margin-bottom:14px}
+.msg{display:flex;gap:9px;margin-bottom:11px}
+.pastille{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:#E8DFC9;color:#7A5F26;
+  font-size:11px;display:flex;align-items:center;justify-content:center;
+}
+.bulle{background:var(--bulle);border-radius:12px 12px 12px 3px;padding:9px 13px}
+.auteur{font-size:11px;color:var(--gris);margin-bottom:2px}
+.vide{text-align:center;color:var(--gris);font-size:13px;padding:20px 0}
+
+.saisie{display:flex;gap:8px}
+.saisie input{margin:0;border-radius:20px}
+.saisie button{
+  width:42px;flex-shrink:0;border:0;border-radius:50%;cursor:pointer;
+  background:var(--or);color:var(--ivoire);font-size:17px;
+}
+
+/* ---------- Pied ---------- */
+footer{background:var(--vert);text-align:center;padding:18px}
+footer span{font-size:10px;color:#8FA79A;letter-spacing:2px}
+
+@media (max-width:400px){
+  .entete h1{font-size:28px}
+  section{padding:22px 18px}
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <header class="entete">
+    <div class="filet"></div>
+    <h1>Chloé &amp; Thomas</h1>
+    <p class="date">12 JUIN 2027</p>
+    <div class="filet"></div>
+  </header>
+
+  <!-- ============================================================
+       VIDÉO
+       Quand la vidéo sera hébergée, remplacer tout le bloc
+       <div class="video-attente">...</div> par le code
+       d'intégration fourni par Bunny Stream ou Vimeo.
+       ============================================================ -->
+  <div class="video">
+    <div class="video-attente">
+      <div class="rond"><span></span></div>
+      <p>La vidéo sera bientôt disponible</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RSVP
+       ============================================================ -->
+  <section>
+    <h2>Serez-vous des nôtres ?</h2>
+    <p class="sous">Réponse souhaitée avant le 1er avril 2027</p>
+
+    <label for="nom">Vos noms et prénoms</label>
+    <input id="nom" type="text" placeholder="Marie et Paul Durand" autocomplete="name">
+
+    <label for="mail">Adresse e-mail</label>
+    <input id="mail" type="email" placeholder="marie.durand@exemple.fr" autocomplete="email">
+
+    <div class="choix">
+      <button type="button" id="oui">Avec joie</button>
+      <button type="button" id="non">Empêché</button>
+    </div>
+
+    <div id="bloc-nombre">
+      <label for="nombre">Nombre de convives</label>
+      <select id="nombre">
+        <option value="1">1 personne</option>
+        <option value="2" selected>2 personnes</option>
+        <option value="3">3 personnes</option>
+        <option value="4">4 personnes</option>
+        <option value="5">5 personnes et plus</option>
+      </select>
+    </div>
+
+    <label for="mot">Un mot pour les mariés (facultatif)</label>
+    <textarea id="mot" rows="2" placeholder="Allergies, contraintes, félicitations…"></textarea>
+
+    <button class="bouton" id="envoyer-rsvp">Envoyer ma réponse</button>
+    <p class="info" id="retour-rsvp"></p>
+  </section>
+
+  <!-- ============================================================
+       CHAT
+       ============================================================ -->
+  <section>
+    <h2>Le salon des invités <span class="enligne" id="compteur"></span></h2>
+    <p class="sous">Covoiturage, hébergement, félicitations : la parole est à vous</p>
+
+    <div class="fil" id="fil">
+      <p class="vide">Les messages apparaîtront ici</p>
+    </div>
+
+    <div class="saisie">
+      <input id="message" type="text" placeholder="Écrire un message" maxlength="300">
+      <button id="envoyer-msg" aria-label="Envoyer">↑</button>
+    </div>
+    <p class="info" id="retour-msg"></p>
+  </section>
+
+  <footer><span>CHLOE-ET-THOMAS.FR</span></footer>
+
+</div>
+
+<script type="module">
+/* ==============================================================
+   ZONE À COMPLÉTER — configuration Firebase
+
+   Remplacer les valeurs ci-dessous par celles fournies par
+   Firebase (Paramètres du projet > Vos applications > Web).
+   Tant que ce n'est pas fait, la page fonctionne en mode
+   démonstration : tout s'affiche, mais rien n'est enregistré.
+   ============================================================== */
+const firebaseConfig = {
+  apiKey:            "A_COMPLETER",
+  authDomain:        "A_COMPLETER",
+  projectId:         "A_COMPLETER",
+  storageBucket:     "A_COMPLETER",
+  messagingSenderId: "A_COMPLETER",
+  appId:             "A_COMPLETER"
+};
+/* ============================================================== */
+
+const configOK = firebaseConfig.apiKey !== "A_COMPLETER";
+let db = null, fs = null;
+
+if (configOK) {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+  fs = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  db = fs.getFirestore(initializeApp(firebaseConfig));
+}
+
+const $ = id => document.getElementById(id);
+
+/* ---------- RSVP ---------- */
+let presence = null;
+
+$("oui").onclick = () => choisir(true);
+$("non").onclick = () => choisir(false);
+
+function choisir(valeur){
+  presence = valeur;
+  $("oui").classList.toggle("actif", valeur);
+  $("non").classList.toggle("actif", !valeur);
+  $("bloc-nombre").style.display = valeur ? "block" : "none";
+}
+
+$("envoyer-rsvp").onclick = async () => {
+  const nom = $("nom").value.trim();
+  const retour = $("retour-rsvp");
+
+  if (nom.length < 3)      return dire(retour, "Merci d'indiquer vos noms.", false);
+  if (presence === null)   return dire(retour, "Merci d'indiquer si vous serez présents.", false);
+
+  const reponse = {
+    nom,
+    email:    $("mail").value.trim(),
+    present:  presence,
+    convives: presence ? Number($("nombre").value) : 0,
+    mot:      $("mot").value.trim().slice(0, 500),
+    envoye:   new Date()
+  };
+
+  if (!configOK) {
+    console.log("Mode démonstration — réponse non enregistrée :", reponse);
+    return dire(retour, "Mode démonstration : réponse non enregistrée.", true);
+  }
+
+  $("envoyer-rsvp").disabled = true;
+  try {
+    await fs.addDoc(fs.collection(db, "rsvp"), { ...reponse, envoye: fs.serverTimestamp() });
+    dire(retour, "Merci, votre réponse est bien enregistrée.", true);
+  } catch (e) {
+    console.error(e);
+    dire(retour, "L'envoi a échoué. Merci de réessayer.", false);
+    $("envoyer-rsvp").disabled = false;
+  }
+};
+
+function dire(element, texte, ok){
+  element.textContent = texte;
+  element.className = "info " + (ok ? "ok" : "ko");
+}
+
+/* ---------- Chat ---------- */
+let prenom = localStorage.getItem("prenom-invite") || "";
+
+$("envoyer-msg").onclick = envoyerMessage;
+$("message").addEventListener("keydown", e => { if (e.key === "Enter") envoyerMessage(); });
+
+async function envoyerMessage(){
+  const texte = $("message").value.trim();
+  if (!texte) return;
+
+  if (!prenom) {
+    prenom = (prompt("Votre prénom, pour que les autres vous reconnaissent :") || "").trim().slice(0, 30);
+    if (!prenom) return;
+    localStorage.setItem("prenom-invite", prenom);
+  }
+
+  const message = { auteur: prenom, texte: texte.slice(0, 300) };
+  $("message").value = "";
+
+  if (!configOK) {
+    afficher([{ ...message, id: Date.now() }], true);
+    return dire($("retour-msg"), "Mode démonstration : message non enregistré.", true);
+  }
+
+  try {
+    await fs.addDoc(fs.collection(db, "messages"), { ...message, envoye: fs.serverTimestamp() });
+    $("retour-msg").textContent = "";
+  } catch (e) {
+    console.error(e);
+    dire($("retour-msg"), "Le message n'a pas pu être envoyé.", false);
+  }
+}
+
+/* Écoute en temps réel : les 30 derniers messages */
+if (configOK) {
+  const requete = fs.query(fs.collection(db, "messages"), fs.orderBy("envoye", "desc"), fs.limit(30));
+  fs.onSnapshot(requete, instantane => {
+    const messages = instantane.docs.map(d => ({ id: d.id, ...d.data() })).reverse();
+    afficher(messages, false);
+  });
+}
+
+function afficher(messages, ajouter){
+  const fil = $("fil");
+  if (!ajouter) fil.innerHTML = "";
+  if (!messages.length) {
+    fil.innerHTML = '<p class="vide">Soyez le premier à écrire un mot</p>';
+    return;
+  }
+  const vide = fil.querySelector(".vide");
+  if (vide) vide.remove();
+
+  for (const m of messages) {
+    const ligne = document.createElement("div");
+    ligne.className = "msg";
+    ligne.innerHTML =
+      '<div class="pastille"></div><div><p class="auteur"></p><div class="bulle"></div></div>';
+    ligne.querySelector(".pastille").textContent = (m.auteur || "?").slice(0, 2).toUpperCase();
+    ligne.querySelector(".auteur").textContent   = m.auteur || "Invité";
+    ligne.querySelector(".bulle").textContent    = m.texte;
+    fil.appendChild(ligne);
+  }
+  fil.scrollTop = fil.scrollHeight;
+}
+</script>
+</body>
+</html>
