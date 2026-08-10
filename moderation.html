@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Modération — Chloé &amp; Thomas</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --vert:#1E3A31; --or:#C0A062; --ivoire:#FBF8F2; --creme:#F5F1E7;
+  --bulle:#F2EEE2; --bord:#E3DCCB; --encre:#33302A; --gris:#8A8271;
+  --succes:#7D9B4E; --alerte:#A5442F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--creme);font-family:'Inter',sans-serif;color:var(--encre);font-size:15px;line-height:1.6}
+.page{max-width:640px;margin:0 auto;background:var(--ivoire);min-height:100vh}
+h1,h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500}
+
+header{background:var(--vert);color:var(--ivoire);padding:24px;text-align:center}
+header h1{font-size:24px}
+header p{font-size:11px;color:var(--or);letter-spacing:2px;margin-top:4px}
+
+section{padding:24px;border-bottom:1px solid var(--bord)}
+h2{font-size:19px;color:var(--vert);margin-bottom:14px}
+
+input{width:100%;font-family:inherit;font-size:15px;background:var(--creme);
+  border:1px solid var(--bord);border-radius:6px;padding:11px 13px;margin-bottom:12px}
+.bouton{width:100%;font-family:inherit;font-size:15px;cursor:pointer;padding:12px;
+  border:0;border-radius:6px;background:var(--vert);color:var(--ivoire)}
+.bouton:hover{background:#24463B}
+.lien{background:none;border:0;color:var(--gris);font-size:13px;cursor:pointer;
+  text-decoration:underline;font-family:inherit;padding:0}
+
+.info{font-size:13px;margin-top:10px;text-align:center}
+.info.ko{color:var(--alerte)}
+
+.chiffres{display:flex;gap:10px;margin-bottom:16px;text-align:center}
+.chiffre{flex:1;background:var(--creme);border:1px solid var(--bord);border-radius:8px;padding:12px 6px}
+.chiffre b{display:block;font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--vert)}
+.chiffre span{font-size:11px;color:var(--gris)}
+
+.ligne{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--bord)}
+.ligne .corps{flex:1;min-width:0}
+.meta{font-size:11px;color:var(--gris)}
+.texte{background:var(--bulle);border-radius:10px;padding:8px 12px;margin-top:4px;
+  word-wrap:break-word;overflow-wrap:anywhere}
+.supprimer{background:none;border:1px solid var(--bord);border-radius:6px;color:var(--alerte);
+  font-family:inherit;font-size:12px;cursor:pointer;padding:6px 10px;flex-shrink:0}
+.supprimer:hover{background:#FBEDE9}
+
+.absent{color:var(--gris)}
+.vide{color:var(--gris);font-size:13px;padding:14px 0}
+#appli{display:none}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Modération</h1>
+    <p>CHLOÉ &amp; THOMAS</p>
+  </header>
+
+  <!-- Connexion -->
+  <section id="connexion">
+    <h2>Accès réservé</h2>
+    <input id="mail" type="email" placeholder="Adresse e-mail" autocomplete="username">
+    <input id="motdepasse" type="password" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="bouton" id="entrer">Se connecter</button>
+    <p class="info ko" id="erreur"></p>
+  </section>
+
+  <!-- Espace privé -->
+  <div id="appli">
+
+    <section>
+      <h2>Réponses reçues</h2>
+      <div class="chiffres">
+        <div class="chiffre"><b id="n-oui">0</b><span>foyers présents</span></div>
+        <div class="chiffre"><b id="n-convives">0</b><span>convives</span></div>
+        <div class="chiffre"><b id="n-non">0</b><span>empêchés</span></div>
+      </div>
+      <div id="liste-rsvp"><p class="vide">Chargement…</p></div>
+    </section>
+
+    <section>
+      <h2>Messages du salon</h2>
+      <div id="liste-messages"><p class="vide">Chargement…</p></div>
+    </section>
+
+    <section style="text-align:center;border:0">
+      <button class="lien" id="sortir">Se déconnecter</button>
+    </section>
+
+  </div>
+
+</div>
+
+<script type="module">
+const firebaseConfig = {
+  apiKey:            "AIzaSyCBkfT-Gby1MqLnWUMF6d7O4S6poz0cj1M",
+  authDomain:        "chloe-et-thomas.firebaseapp.com",
+  projectId:         "chloe-et-thomas",
+  storageBucket:     "chloe-et-thomas.firebasestorage.app",
+  messagingSenderId: "732187019593",
+  appId:             "1:732187019593:web:42cb529633dc8f835ab298"
+};
+const cleRecaptcha = "6LdKR38tAAAAAJ0gTyyAzHWZXsT-CBqnbG-LlbXj";
+
+const V = "https://www.gstatic.com/firebasejs/10.12.0/";
+const { initializeApp } = await import(V + "firebase-app.js");
+const { initializeAppCheck, ReCaptchaV3Provider } = await import(V + "firebase-app-check.js");
+const auth_ = await import(V + "firebase-auth.js");
+const fs    = await import(V + "firebase-firestore.js");
+
+const app = initializeApp(firebaseConfig);
+initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider(cleRecaptcha),
+  isTokenAutoRefreshEnabled: true
+});
+const auth = auth_.getAuth(app);
+const db   = fs.getFirestore(app);
+
+const $ = id => document.getElementById(id);
+
+/* ---------- Connexion ---------- */
+$("entrer").onclick = async () => {
+  $("erreur").textContent = "";
+  try {
+    await auth_.signInWithEmailAndPassword(auth, $("mail").value.trim(), $("motdepasse").value);
+  } catch (e) {
+    $("erreur").textContent = "Adresse ou mot de passe incorrect.";
+  }
+};
+$("motdepasse").addEventListener("keydown", e => { if (e.key === "Enter") $("entrer").click(); });
+$("sortir").onclick = () => auth_.signOut(auth);
+
+auth_.onAuthStateChanged(auth, utilisateur => {
+  $("connexion").style.display = utilisateur ? "none"  : "block";
+  $("appli").style.display     = utilisateur ? "block" : "none";
+  if (utilisateur) { ecouterRsvp(); ecouterMessages(); }
+});
+
+/* ---------- Formatage ---------- */
+const quand = t => t?.toDate
+  ? t.toDate().toLocaleString("fr-FR", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" })
+  : "—";
+
+/* ---------- RSVP ---------- */
+function ecouterRsvp(){
+  const r = fs.query(fs.collection(db, "rsvp"), fs.orderBy("envoye", "desc"));
+  fs.onSnapshot(r, instantane => {
+    const zone = $("liste-rsvp");
+    zone.innerHTML = "";
+    let oui = 0, non = 0, convives = 0;
+
+    if (instantane.empty) { zone.innerHTML = '<p class="vide">Aucune réponse pour le moment</p>'; }
+
+    instantane.forEach(d => {
+      const v = d.data();
+      if (v.present) { oui++; convives += (v.convives || 0); } else { non++; }
+
+      const ligne = document.createElement("div");
+      ligne.className = "ligne";
+      ligne.innerHTML = '<div class="corps"><p class="titre"></p><p class="meta"></p></div>';
+      const titre = ligne.querySelector(".titre");
+      titre.textContent = v.nom + (v.present ? ` — ${v.convives} pers.` : " — empêché");
+      if (!v.present) titre.classList.add("absent");
+
+      let meta = quand(v.envoye);
+      if (v.email) meta += " · " + v.email;
+      ligne.querySelector(".meta").textContent = meta;
+
+      if (v.mot) {
+        const mot = document.createElement("div");
+        mot.className = "texte";
+        mot.textContent = v.mot;
+        ligne.querySelector(".corps").appendChild(mot);
+      }
+      zone.appendChild(ligne);
+    });
+
+    $("n-oui").textContent = oui;
+    $("n-non").textContent = non;
+    $("n-convives").textContent = convives;
+  });
+}
+
+/* ---------- Messages ---------- */
+function ecouterMessages(){
+  const r = fs.query(fs.collection(db, "messages"), fs.orderBy("envoye", "desc"), fs.limit(200));
+  fs.onSnapshot(r, instantane => {
+    const zone = $("liste-messages");
+    zone.innerHTML = "";
+    if (instantane.empty) { zone.innerHTML = '<p class="vide">Aucun message</p>'; return; }
+
+    instantane.forEach(d => {
+      const m = d.data();
+      const ligne = document.createElement("div");
+      ligne.className = "ligne";
+      ligne.innerHTML =
+        '<div class="corps"><p class="meta"></p><div class="texte"></div></div>' +
+        '<button class="supprimer">Supprimer</button>';
+      ligne.querySelector(".meta").textContent  = (m.auteur || "Invité") + " · " + quand(m.envoye);
+      ligne.querySelector(".texte").textContent = m.texte;
+
+      ligne.querySelector(".supprimer").onclick = async () => {
+        if (!confirm("Supprimer définitivement ce message ?")) return;
+        try { await fs.deleteDoc(fs.doc(db, "messages", d.id)); }
+        catch (e) { console.error(e); alert("La suppression a échoué."); }
+      };
+      zone.appendChild(ligne);
+    });
+  });
+}
+</script>
+</body>
+</html>
