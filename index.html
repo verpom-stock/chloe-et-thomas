@@ -61,13 +61,13 @@ h1,h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;line-height
 
 /* ---------- Vidéo ---------- */
 .video{
-  position:relative;
   background:#fff;
-  aspect-ratio:16/9;
   border-bottom:1px solid var(--bord);
   display:flex;align-items:center;justify-content:center;
+  min-height:180px;
 }
-.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video video{display:block;max-width:100%;max-height:70vh;margin:0 auto}
+.video iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
 .video-attente{text-align:center;padding:24px}
 .rond{
   width:54px;height:54px;border-radius:50%;
@@ -119,6 +119,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--or);outline-offs
 .info.ok{color:var(--succes)}
 .info.ko{color:#A5442F}
 
+/* ---------- Bloc hébergement ---------- */
+.separateur{height:1px;background:var(--bord);margin:20px 0 18px}
+.titre-bloc{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;
+  color:var(--vert);margin-bottom:2px}
+
 /* ---------- Chat ---------- */
 .enligne{font-size:11px;color:var(--succes);float:right;margin-top:6px}
 .fil{max-height:340px;overflow-y:auto;margin-bottom:14px}
@@ -167,10 +172,9 @@ footer span{font-size:10px;color:#8FA79A;letter-spacing:2px}
        d'intégration fourni par Bunny Stream ou Vimeo.
        ============================================================ -->
   <div class="video">
-    <div class="video-attente">
-      <div class="rond"><span></span></div>
-      <p>La vidéo sera bientôt disponible</p>
-    </div>
+    <video controls playsinline preload="metadata">
+      <source src="video-test.mp4" type="video/mp4">
+    </video>
   </div>
 
   <!-- ============================================================
@@ -200,6 +204,27 @@ footer span{font-size:10px;color:#8FA79A;letter-spacing:2px}
         <option value="4">4 personnes</option>
         <option value="5">5 personnes et plus</option>
       </select>
+    </div>
+
+    <div id="bloc-hebergement" style="display:none">
+      <div class="separateur"></div>
+      <p class="titre-bloc">Dormir sur place</p>
+      <p class="sous">Chloé et Thomas vous convient à passer la nuit sur place, à leurs frais.</p>
+      <div class="choix">
+        <button type="button" id="h-oui">Volontiers</button>
+        <button type="button" id="h-non">Sans façon</button>
+      </div>
+      <div id="bloc-couchages" style="display:none">
+        <label for="couchages">Nombre de personnes à loger</label>
+        <select id="couchages">
+          <option value="1">1 personne</option>
+          <option value="2" selected>2 personnes</option>
+          <option value="3">3 personnes</option>
+          <option value="4">4 personnes</option>
+          <option value="5">5 personnes et plus</option>
+        </select>
+      </div>
+      <div class="separateur"></div>
     </div>
 
     <label for="mot">Un mot pour les mariés (facultatif)</label>
@@ -275,8 +300,17 @@ if (configOK) {
 
 const $ = id => document.getElementById(id);
 
+/* ---------- Variante d'invitation ----------
+   ?v=2 → invité convié à dormir sur place.
+   Mémorisée dans le navigateur : si l'invité revient plus tard en
+   tapant l'adresse à la main, il retrouve sa version.            */
+const parametre = new URLSearchParams(location.search).get("v");
+if (parametre === "2") localStorage.setItem("variante-invite", "2");
+const heberge = localStorage.getItem("variante-invite") === "2";
+
 /* ---------- RSVP ---------- */
 let presence = null;
+let chambre  = null;
 
 $("oui").onclick = () => choisir(true);
 $("non").onclick = () => choisir(false);
@@ -286,6 +320,17 @@ function choisir(valeur){
   $("oui").classList.toggle("actif", valeur);
   $("non").classList.toggle("actif", !valeur);
   $("bloc-nombre").style.display = valeur ? "block" : "none";
+  $("bloc-hebergement").style.display = (valeur && heberge) ? "block" : "none";
+}
+
+$("h-oui").onclick = () => choisirChambre(true);
+$("h-non").onclick = () => choisirChambre(false);
+
+function choisirChambre(valeur){
+  chambre = valeur;
+  $("h-oui").classList.toggle("actif", valeur);
+  $("h-non").classList.toggle("actif", !valeur);
+  $("bloc-couchages").style.display = valeur ? "block" : "none";
 }
 
 $("envoyer-rsvp").onclick = async () => {
@@ -294,14 +339,19 @@ $("envoyer-rsvp").onclick = async () => {
 
   if (nom.length < 3)      return dire(retour, "Merci d'indiquer vos noms.", false);
   if (presence === null)   return dire(retour, "Merci d'indiquer si vous serez présents.", false);
+  if (presence && heberge && chambre === null)
+    return dire(retour, "Merci de préciser si vous dormez sur place.", false);
 
   const reponse = {
     nom,
-    email:    $("mail").value.trim(),
-    present:  presence,
-    convives: presence ? Number($("nombre").value) : 0,
-    mot:      $("mot").value.trim().slice(0, 500),
-    envoye:   new Date()
+    email:       $("mail").value.trim(),
+    present:     presence,
+    convives:    presence ? Number($("nombre").value) : 0,
+    invitenuit:  heberge,
+    dortsurplace: !!(presence && heberge && chambre),
+    couchages:   (presence && heberge && chambre) ? Number($("couchages").value) : 0,
+    mot:         $("mot").value.trim().slice(0, 500),
+    envoye:      new Date()
   };
 
   if (!configOK) {

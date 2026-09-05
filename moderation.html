@@ -85,6 +85,7 @@ input{width:100%;font-family:inherit;font-size:15px;background:var(--creme);
         <div class="chiffre"><b id="n-oui">0</b><span>foyers présents</span></div>
         <div class="chiffre"><b id="n-convives">0</b><span>convives</span></div>
         <div class="chiffre"><b id="n-non">0</b><span>empêchés</span></div>
+        <div class="chiffre"><b id="n-couchages">0</b><span>couchages / 200</span></div>
       </div>
       <div id="liste-rsvp"><p class="vide">Chargement…</p></div>
     </section>
@@ -158,13 +159,14 @@ function ecouterRsvp(){
   fs.onSnapshot(r, instantane => {
     const zone = $("liste-rsvp");
     zone.innerHTML = "";
-    let oui = 0, non = 0, convives = 0;
+    let oui = 0, non = 0, convives = 0, couchages = 0;
 
     if (instantane.empty) { zone.innerHTML = '<p class="vide">Aucune réponse pour le moment</p>'; }
 
     instantane.forEach(d => {
       const v = d.data();
       if (v.present) { oui++; convives += (v.convives || 0); } else { non++; }
+      if (v.dortsurplace) couchages += (v.couchages || 0);
 
       const ligne = document.createElement("div");
       ligne.className = "ligne";
@@ -175,6 +177,11 @@ function ecouterRsvp(){
 
       let meta = quand(v.envoye);
       if (v.email) meta += " · " + v.email;
+      if (v.invitenuit) {
+        meta += v.dortsurplace
+          ? ` · dort sur place (${v.couchages})`
+          : " · ne dort pas sur place";
+      }
       ligne.querySelector(".meta").textContent = meta;
 
       if (v.mot) {
@@ -189,6 +196,7 @@ function ecouterRsvp(){
     $("n-oui").textContent = oui;
     $("n-non").textContent = non;
     $("n-convives").textContent = convives;
+    $("n-couchages").textContent = couchages;
   });
 }
 
