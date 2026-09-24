@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Modération — Chloé &amp; Thomas</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --vert:#1E3A31; --or:#C0A062; --ivoire:#FBF8F2; --creme:#F5F1E7;
+  --bulle:#F2EEE2; --bord:#E3DCCB; --encre:#33302A; --gris:#8A8271;
+  --succes:#7D9B4E; --alerte:#A5442F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--creme);font-family:'Inter',sans-serif;color:var(--encre);font-size:15px;line-height:1.6}
+.page{max-width:640px;margin:0 auto;background:var(--ivoire);min-height:100vh}
+h1,h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500}
+
+header{background:var(--vert);color:var(--ivoire);padding:24px;text-align:center}
+header h1{font-size:24px}
+header p{font-size:11px;color:var(--or);letter-spacing:2px;margin-top:4px}
+
+section{padding:24px;border-bottom:1px solid var(--bord)}
+h2{font-size:19px;color:var(--vert);margin-bottom:14px}
+
+input{width:100%;font-family:inherit;font-size:15px;background:var(--creme);
+  border:1px solid var(--bord);border-radius:6px;padding:11px 13px;margin-bottom:12px}
+.bouton{width:100%;font-family:inherit;font-size:15px;cursor:pointer;padding:12px;
+  border:0;border-radius:6px;background:var(--vert);color:var(--ivoire)}
+.bouton:hover{background:#24463B}
+.bouton.export{margin-top:16px;background:transparent;border:1px solid var(--bord-fonce,#CFC6B2);color:var(--vert)}
+.bouton.export:hover{background:var(--creme)}
+.lien{background:none;border:0;color:var(--gris);font-size:13px;cursor:pointer;
+  text-decoration:underline;font-family:inherit;padding:0}
+
+.info{font-size:13px;margin-top:10px;text-align:center}
+.info.ko{color:var(--alerte)}
+
+.chiffres{display:flex;gap:10px;margin-bottom:16px;text-align:center}
+
+select.categorie{font-family:inherit;font-size:12px;color:var(--vert);
+  background:var(--creme);border:1px solid var(--bord);border-radius:6px;
+  padding:4px 8px;margin-top:7px;cursor:pointer}
+.recap{background:var(--creme);border:1px solid var(--bord);border-radius:8px;
+  padding:10px 14px;margin-bottom:18px}
+.recap .r{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
+.recap .r span{color:var(--gris);font-size:12px}
+
+/* ---------- Gestion des catégories ---------- */
+.cats{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.cat{display:inline-flex;align-items:center;gap:7px;background:var(--creme);
+  border:1px solid var(--bord);border-radius:20px;padding:5px 8px 5px 13px;font-size:13px}
+.cat button{background:none;border:0;color:var(--gris);font-size:15px;
+  cursor:pointer;line-height:1;padding:0 2px}
+.cat button:hover{color:var(--alerte)}
+.ajout{display:flex;gap:8px}
+.ajout input{margin:0}
+.ajout button{flex-shrink:0;width:auto;padding:0 18px}
+.chiffre{flex:1;background:var(--creme);border:1px solid var(--bord);border-radius:8px;padding:12px 6px}
+.chiffre b{display:block;font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--vert)}
+.chiffre span{font-size:11px;color:var(--gris)}
+
+.ligne{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--bord)}
+.ligne.ignoree{opacity:.45}
+.ligne.ignoree .titre{text-decoration:line-through}
+.actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.action{background:none;border:1px solid var(--bord);border-radius:6px;color:var(--gris);
+  font-family:inherit;font-size:11px;cursor:pointer;padding:5px 9px;white-space:nowrap}
+.action:hover{background:var(--creme);color:var(--vert)}
+.action.rouge:hover{background:#FBEDE9;color:var(--alerte);border-color:var(--alerte)}
+.ligne .corps{flex:1;min-width:0}
+.meta{font-size:11px;color:var(--gris)}
+.texte{background:var(--bulle);border-radius:10px;padding:8px 12px;margin-top:4px;
+  word-wrap:break-word;overflow-wrap:anywhere}
+.supprimer{background:none;border:1px solid var(--bord);border-radius:6px;color:var(--alerte);
+  font-family:inherit;font-size:12px;cursor:pointer;padding:6px 10px;flex-shrink:0}
+.supprimer:hover{background:#FBEDE9}
+
+.absent{color:var(--gris)}
+.vide{color:var(--gris);font-size:13px;padding:14px 0}
+#appli{display:none}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Modération</h1>
+    <p>CHLOÉ &amp; THOMAS</p>
+  </header>
+
+  <!-- Connexion -->
+  <section id="connexion">
+    <h2>Accès réservé</h2>
+    <input id="mail" type="email" placeholder="Adresse e-mail" autocomplete="username">
+    <input id="motdepasse" type="password" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="bouton" id="entrer">Se connecter</button>
+    <p class="info ko" id="erreur"></p>
+  </section>
+
+  <!-- Espace privé -->
+  <div id="appli">
+
+    <section>
+      <h2>Réponses reçues</h2>
+      <div class="chiffres">
+        <div class="chiffre"><b id="n-oui">0</b><span>foyers présents</span></div>
+        <div class="chiffre"><b id="n-convives">0</b><span>convives</span></div>
+        <div class="chiffre"><b id="n-non">0</b><span>empêchés</span></div>
+        <div class="chiffre"><b id="n-couchages">0</b><span>couchages / 200</span></div>
+      </div>
+      <div class="recap" id="recap"></div>
+      <div id="liste-rsvp"><p class="vide">Chargement…</p></div>
+      <button class="bouton export" id="exporter">Exporter la liste (Excel)</button>
+    </section>
+
+    <section>
+      <h2>Catégories</h2>
+      <div class="cats" id="cats"></div>
+      <div class="ajout">
+        <input id="nouvelle-cat" type="text" placeholder="Nouvelle catégorie" maxlength="40">
+        <button class="bouton" id="ajouter-cat">Ajouter</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Messages du salon</h2>
+      <div id="liste-messages"><p class="vide">Chargement…</p></div>
+    </section>
+
+    <section style="text-align:center;border:0">
+      <button class="lien" id="sortir">Se déconnecter</button>
+    </section>
+
+  </div>
+
+</div>
+
+<script type="module">
+const firebaseConfig = {
+  apiKey:            "AIzaSyCBkfT-Gby1MqLnWUMF6d7O4S6poz0cj1M",
+  authDomain:        "chloe-et-thomas.firebaseapp.com",
+  projectId:         "chloe-et-thomas",
+  storageBucket:     "chloe-et-thomas.firebasestorage.app",
+  messagingSenderId: "732187019593",
+  appId:             "1:732187019593:web:42cb529633dc8f835ab298"
+};
+const cleRecaptcha = "6LdKR38tAAAAAJ0gTyyAzHWZXsT-CBqnbG-LlbXj";
+
+const V = "https://www.gstatic.com/firebasejs/10.12.0/";
+const { initializeApp } = await import(V + "firebase-app.js");
+const { initializeAppCheck, ReCaptchaV3Provider } = await import(V + "firebase-app-check.js");
+const auth_ = await import(V + "firebase-auth.js");
+const fs    = await import(V + "firebase-firestore.js");
+
+const app = initializeApp(firebaseConfig);
+initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider(cleRecaptcha),
+  isTokenAutoRefreshEnabled: true
+});
+const auth = auth_.getAuth(app);
+const db   = fs.getFirestore(app);
+
+const $ = id => document.getElementById(id);
+
+/* ---------- Connexion ---------- */
+$("entrer").onclick = async () => {
+  $("erreur").textContent = "";
+  try {
+    await auth_.signInWithEmailAndPassword(auth, $("mail").value.trim(), $("motdepasse").value);
+  } catch (e) {
+    $("erreur").textContent = "Adresse ou mot de passe incorrect.";
+  }
+};
+$("motdepasse").addEventListener("keydown", e => { if (e.key === "Enter") $("entrer").click(); });
+$("sortir").onclick = () => auth_.signOut(auth);
+
+auth_.onAuthStateChanged(auth, utilisateur => {
+  $("connexion").style.display = utilisateur ? "none"  : "block";
+  $("appli").style.display     = utilisateur ? "block" : "none";
+  if (utilisateur) { ecouterCategories(); ecouterRsvp(); ecouterMessages(); }
+});
+
+/* ---------- Formatage ---------- */
+const quand = t => t?.toDate
+  ? t.toDate().toLocaleString("fr-FR", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" })
+  : "—";
+
+/* ---------- Catégories ----------
+   La liste vit dans Firestore (config/categories) : Thomas et
+   Chloé peuvent l'étoffer eux-mêmes, et les deux voient les
+   mêmes catégories en direct.                                  */
+const CATEGORIES_INITIALES = [
+  "Les mariés", "Invités d'honneur", "Famille Chloé",
+  "Famille Thomas", "Amis Chloé", "Amis Thomas"
+];
+
+let categories = CATEGORIES_INITIALES.slice();
+let reponses = [];
+
+function ecouterCategories(){
+  fs.onSnapshot(fs.doc(db, "config", "categories"), instantane => {
+    const liste = instantane.exists() ? instantane.data().liste : null;
+    if (Array.isArray(liste) && liste.length) categories = liste;
+    rendreCategories();
+    rendreRsvp();
+  }, e => console.error(e));
+}
+
+async function enregistrerCategories(liste){
+  try {
+    await fs.setDoc(fs.doc(db, "config", "categories"), { liste }, { merge: true });
+  } catch (e) {
+    console.error(e);
+    alert("La liste des catégories n'a pas pu être enregistrée.");
+  }
+}
+
+function rendreCategories(){
+  const zone = $("cats");
+  zone.innerHTML = "";
+  for (const c of categories) {
+    const puce = document.createElement("span");
+    puce.className = "cat";
+    puce.innerHTML = '<b></b><button title="Supprimer">×</button>';
+    puce.querySelector("b").textContent = c;
+    puce.querySelector("button").onclick = () => {
+      const utilisee = reponses.filter(v => v.categorie === c).length;
+      const message = utilisee
+        ? `Supprimer « ${c} » ? ${utilisee} réponse${utilisee > 1 ? "s" : ""} repassera${utilisee > 1 ? "ont" : ""} en non classé.`
+        : `Supprimer « ${c} » ?`;
+      if (confirm(message)) enregistrerCategories(categories.filter(x => x !== c));
+    };
+    zone.appendChild(puce);
+  }
+}
+
+$("ajouter-cat").onclick = () => {
+  const nom = $("nouvelle-cat").value.trim().slice(0, 40);
+  if (!nom) return;
+  if (categories.includes(nom)) return alert("Cette catégorie existe déjà.");
+  $("nouvelle-cat").value = "";
+  enregistrerCategories([...categories, nom]);
+};
+$("nouvelle-cat").addEventListener("keydown", e => {
+  if (e.key === "Enter") $("ajouter-cat").click();
+});
+
+/* ---------- RSVP ---------- */
+function ecouterRsvp(){
+  const r = fs.query(fs.collection(db, "rsvp"), fs.orderBy("envoye", "desc"));
+  fs.onSnapshot(r, instantane => {
+    reponses = instantane.docs.map(d => ({ id: d.id, ...d.data() }));
+    rendreRsvp();
+  });
+}
+
+function rendreRsvp(){
+  const zone = $("liste-rsvp");
+  if (!zone) return;
+  zone.innerHTML = "";
+
+  let oui = 0, non = 0, convives = 0, couchages = 0;
+
+  if (!reponses.length) {
+    zone.innerHTML = '<p class="vide">Aucune réponse pour le moment</p>';
+  }
+
+  for (const v of reponses) {
+    const compte = !v.ignore;
+    if (compte) {
+      if (v.present) { oui++; convives += (v.convives || 0); } else { non++; }
+      if (v.dortsurplace) couchages += (v.couchages || 0);
+    }
+
+    const ligne = document.createElement("div");
+    ligne.className = "ligne" + (compte ? "" : " ignoree");
+    ligne.innerHTML = '<div class="corps"><p class="titre"></p><p class="meta"></p></div>';
+    const titre = ligne.querySelector(".titre");
+    titre.textContent = v.nom + (v.present ? ` — ${v.convives} pers.` : " — empêché");
+    if (!v.present) titre.classList.add("absent");
+
+    let meta = quand(v.envoye);
+    if (v.email) meta += " · " + v.email;
+    if (v.invitenuit) {
+      meta += v.dortsurplace
+        ? ` · dort sur place (${v.couchages})`
+        : " · ne dort pas sur place";
+    }
+    ligne.querySelector(".meta").textContent = meta;
+
+    if (v.mot) {
+      const mot = document.createElement("div");
+      mot.className = "texte";
+      mot.textContent = v.mot;
+      ligne.querySelector(".corps").appendChild(mot);
+    }
+
+    /* Une catégorie supprimée de la liste reste proposée tant
+       qu'une réponse la porte : rien ne disparaît en silence. */
+    const proposees = [""].concat(categories);
+    if (v.categorie && !proposees.includes(v.categorie)) proposees.push(v.categorie);
+
+    const choix = document.createElement("select");
+    choix.className = "categorie";
+    for (const c of proposees) {
+      const o = document.createElement("option");
+      o.value = c;
+      o.textContent = c || "Non classé";
+      if ((v.categorie || "") === c) o.selected = true;
+      choix.appendChild(o);
+    }
+    choix.onchange = async () => {
+      try {
+        await fs.updateDoc(fs.doc(db, "rsvp", v.id), { categorie: choix.value });
+      } catch (e) {
+        console.error(e);
+        alert("Le classement n'a pas pu être enregistré.");
+      }
+    };
+    ligne.querySelector(".corps").appendChild(choix);
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const doublon = document.createElement("button");
+    doublon.className = "action";
+    doublon.textContent = compte ? "Doublon" : "Recompter";
+    doublon.title = compte
+      ? "Exclure des compteurs sans supprimer la réponse"
+      : "Réintégrer cette réponse dans les compteurs";
+    doublon.onclick = async () => {
+      try { await fs.updateDoc(fs.doc(db, "rsvp", v.id), { ignore: compte }); }
+      catch (e) { console.error(e); alert("L'opération a échoué."); }
+    };
+    actions.appendChild(doublon);
+
+    ligne.appendChild(actions);
+
+    zone.appendChild(ligne);
+  }
+
+  $("n-oui").textContent = oui;
+  $("n-non").textContent = non;
+  $("n-convives").textContent = convives;
+  $("n-couchages").textContent = couchages;
+
+  afficherRecap();
+}
+
+/* ---------- Récapitulatif par catégorie ---------- */
+function afficherRecap(){
+  const zone = $("recap");
+  zone.innerHTML = "";
+  if (!reponses.length) return;
+
+  for (const c of categories.concat([""])) {
+    const lot = reponses.filter(v => (v.categorie || "") === c && v.present && !v.ignore);
+    if (!lot.length) continue;
+
+    const convives  = lot.reduce((s, v) => s + (v.convives || 0), 0);
+    const couchages = lot.reduce((s, v) => s + (v.dortsurplace ? (v.couchages || 0) : 0), 0);
+
+    const ligne = document.createElement("div");
+    ligne.className = "r";
+    ligne.innerHTML = "<b></b><span></span>";
+    ligne.querySelector("b").textContent = c || "Non classé";
+    ligne.querySelector("span").textContent =
+      `${lot.length} foyer${lot.length > 1 ? "s" : ""} · ${convives} convives · ${couchages} couchages`;
+    zone.appendChild(ligne);
+  }
+}
+
+/* ---------- Export Excel (CSV) ---------- */
+$("exporter").onclick = () => {
+  if (!reponses.length) return alert("Aucune réponse à exporter.");
+
+  const cellule = valeur => {
+    const t = String(valeur ?? "").replace(/"/g, '""');
+    return `"${t}"`;
+  };
+
+  const entetes = ["Nom", "Catégorie", "E-mail", "Présence", "Convives",
+                   "Dort sur place", "Couchages", "Comptée", "Mot", "Date de réponse"];
+
+  const lignes = reponses.map(v => [
+    v.nom,
+    v.categorie || "Non classé",
+    v.email || "",
+    v.present ? "Oui" : "Non",
+    v.present ? (v.convives || 0) : 0,
+    v.dortsurplace ? "Oui" : "Non",
+    v.dortsurplace ? (v.couchages || 0) : 0,
+    v.ignore ? "Non (doublon)" : "Oui",
+    (v.mot || "").replace(/[\r\n]+/g, " "),
+    quand(v.envoye)
+  ].map(cellule).join(";"));
+
+  /* point-virgule + BOM : Excel français ouvre le fichier
+     directement, avec les accents corrects.                */
+  const contenu = "\uFEFF" + [entetes.map(cellule).join(";"), ...lignes].join("\r\n");
+
+  const lien = document.createElement("a");
+  lien.href = URL.createObjectURL(new Blob([contenu], { type: "text/csv;charset=utf-8;" }));
+  lien.download = "reponses-mariage-" + new Date().toISOString().slice(0, 10) + ".csv";
+  lien.click();
+  URL.revokeObjectURL(lien.href);
+};
+
+/* ---------- Messages ---------- */
+function ecouterMessages(){
+  const r = fs.query(fs.collection(db, "messages"), fs.orderBy("envoye", "desc"), fs.limit(200));
+  fs.onSnapshot(r, instantane => {
+    const zone = $("liste-messages");
+    zone.innerHTML = "";
+    if (instantane.empty) { zone.innerHTML = '<p class="vide">Aucun message</p>'; return; }
+
+    instantane.forEach(d => {
+      const m = d.data();
+      const ligne = document.createElement("div");
+      ligne.className = "ligne";
+      ligne.innerHTML =
+        '<div class="corps"><p class="meta"></p><div class="texte"></div></div>' +
+        '<button class="supprimer">Supprimer</button>';
+      ligne.querySelector(".meta").textContent  = (m.auteur || "Invité") + " · " + quand(m.envoye);
+      ligne.querySelector(".texte").textContent = m.texte;
+
+      ligne.querySelector(".supprimer").onclick = async () => {
+        if (!confirm("Supprimer définitivement ce message ?")) return;
+        try { await fs.deleteDoc(fs.doc(db, "messages", d.id)); }
+        catch (e) { console.error(e); alert("La suppression a échoué."); }
+      };
+      zone.appendChild(ligne);
+    });
+  });
+}
+</script>
+</body>
+</html>
